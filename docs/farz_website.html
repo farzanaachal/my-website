@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Click for a Little Love 💖</title>
+  <style>
+    :root{
+      --bg1:#fde2ff; /* soft lilac */
+      --bg2:#e0f6ff; /* baby blue */
+      --ink:#4b4b5a; /* cozy ink */
+      --accent:#ff9ac2; /* pastel pink */
+      --btn:#ffffffcc;
+      --btn-border:#ffffff70;
+      --shadow: 0 10px 30px rgba(0,0,0,.08);
+      --radius: 20px;
+    }
+
+    /* Reset-ish */
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{
+      margin:0;
+      font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Apple Color Emoji","Segoe UI Emoji";
+      color:var(--ink);
+      background: linear-gradient(135deg, var(--bg1), var(--bg2));
+      display:grid;
+      place-items:center;
+    }
+
+    .wrap{
+      width:min(900px, 92vw);
+      text-align:center;
+      padding:clamp(14px, 2.5vw, 28px);
+    }
+
+    h1{
+      font-size:clamp(1.1rem, 2.4vw, 1.35rem);
+      font-weight:600;
+      letter-spacing:.3px;
+      opacity:.85;
+      margin:0 0 14px;
+    }
+
+    .card{
+      background: rgba(255,255,255,.55);
+      border:1px solid var(--btn-border);
+      backdrop-filter: blur(8px);
+      border-radius:var(--radius);
+      box-shadow: var(--shadow);
+      padding:clamp(18px, 3.5vw, 36px);
+    }
+
+    #loveBtn{
+      display:inline-block;
+      border:none;
+      background:var(--btn);
+      border:1px solid var(--btn-border);
+      color:#3d3d4f;
+      padding:clamp(16px, 2.8vw, 22px) clamp(22px, 4.5vw, 36px);
+      font-size:clamp(1.05rem, 2.4vw, 1.4rem);
+      font-weight:700;
+      border-radius:999px;
+      cursor:pointer;
+      box-shadow: var(--shadow);
+      transition: transform .08s ease, box-shadow .2s ease, background .2s ease;
+      outline-offset: 4px;
+    }
+    #loveBtn:hover{ transform: translateY(-1px); box-shadow: 0 12px 36px rgba(0,0,0,.10); }
+    #loveBtn:active{ transform: translateY(0); box-shadow: var(--shadow); }
+    #loveBtn:focus-visible{ outline:3px solid var(--accent); }
+
+    .output{
+      min-height: clamp(120px, 18vh, 220px);
+      display:grid;
+      place-items:center;
+      margin-top:clamp(18px, 3vw, 28px);
+      padding: clamp(6px, 1.5vw, 10px);
+    }
+
+    .msg{
+      display:inline-flex;
+      align-items:center;
+      gap:.6ch;
+      font-size:clamp(1.25rem, 3.7vw, 2rem);
+      line-height:1.25;
+      font-weight:700;
+      letter-spacing:.2px;
+      text-shadow: 0 1px 0 rgba(255,255,255,.8);
+      opacity:0;
+      transform: translateY(6px);
+      animation: fadeIn .45s ease forwards;
+      text-wrap: balance;
+    }
+
+    .heart{
+      display:inline-grid;
+      place-items:center;
+      font-size: 1em;
+      transform-origin:center;
+      animation: pulse 1.2s ease-in-out infinite;
+      filter: drop-shadow(0 2px 4px rgba(0,0,0,.12));
+    }
+
+    @keyframes fadeIn{
+      to{ opacity:1; transform: translateY(0); }
+    }
+    @keyframes pulse{
+      0%,100%{ transform: scale(1); }
+      50%{ transform: scale(1.12); }
+    }
+
+    .hint{
+      margin-top:10px;
+      font-size:.9rem;
+      opacity:.7;
+    }
+  </style>
+</head>
+<body>
+  <main class="wrap" role="main">
+    <h1 aria-hidden="true">Click for a Little Love 💖</h1>
+
+    <section class="card" aria-label="Affirmation generator">
+      <button id="loveBtn" aria-controls="output" aria-label="Click to get a cute message">
+        Click me for a little love sugar plum 💞
+      </button>
+
+      <div id="output" class="output" aria-live="polite" aria-atomic="true"></div>
+
+      <div class="hint">Tap the button again for another note ✨</div>
+    </section>
+  </main>
+
+  <script>
+    // --- 1) Hearts (emoji set with varied colors) ---
+    const HEARTS = [
+      "💖","💗","💓","💞","💕","💘","💝","💟",
+      "❤️","🧡","💛","💚","💙","💜","🩷","🩵","🤍","🤎","🖤"
+    ];
+
+    // Optional: additional ASCII heart rendered with CSS color (kept for variety)
+    // We’ll mainly use the emojis above for consistent cross-platform color.
+
+    // --- 2) Generate 1,000 cute messages into a JS array (placeholders allowed) ---
+    // We’ll combine a bunch of cozy templates so the placeholders still feel sweet.
+    const templates = messages = [
+    "You’ve been my day-one since Stony Brook—grateful for you always.",
+    "Our Greece trip is still my favorite slideshow in my head.",
+    "No one makes a track workout fun like you complaining adorably.",
+    "Study sessions with you turned stress into inside jokes and snacks.",
+    "You always show up—rides, notes, hugs, snacks—everything I didn’t know I needed.",
+    "I love how you light up the minute we start talking.",
+    "You’re the friend who turns ordinary moments into core memories.",
+    "Thanks for feeding my body and my soul—chef and therapist in one.",
+    "Your excited ‘HI!!’ could power the whole Stony Brook campus.",
+    "You make hard days feel soft and manageable.",
+    "You always remember my favorite snacks like it’s your superpower.",
+    "Track laps were easier because you kept me laughing (and complaining).",
+    "We studied hard, but we loved harder—best teammate ever.",
+    "Greece was beautiful, but your laughter made it breathtaking.",
+    "You’re the person I can talk to for hours without noticing time.",
+    "Thank you for the late-night study pep talks and snack drops.",
+    "Your joy is contagious—keep being the sunshine you are.",
+    "You celebrate my wins like they’re yours. That’s real friendship.",
+    "I still hear your playful ‘I’m tired’ every time I see a track.",
+    "You are thoughtful in a thousand tiny, perfect ways.",
+    "From lecture halls to island sunsets, you’ve been my constant.",
+    "You make me feel seen, heard, and always, always welcomed.",
+    "Your snack bag should get an honorary degree.",
+    "We earned our grades, but you earned my lifetime gratitude.",
+    "You turn ‘let’s study’ into therapy, comedy, and productivity.",
+    "Your check-ins mean more than you know—thank you for caring.",
+    "Every rerun of our Greece photos makes me smile all over again.",
+    "You show love in actions—food, time, patience, presence.",
+    "Your excitement to see me makes the whole week brighter.",
+    "Track team? Nah—complaint team captain, and I adore you.",
+    "You’re my safe place to laugh, cry, and eat fries.",
+    "No one hypes me up like you do.",
+    "You make friendship feel effortless and golden.",
+    "You remember my deadlines better than I do—lifesaver.",
+    "Thanks for every ‘did you eat?’ text and follow-up snack.",
+    "You’re the funniest person to suffer through cardio with.",
+    "Our campus walks felt like mini vacations with you.",
+    "We speak fluent glance-and-giggle. Elite language.",
+    "Your voice is my favorite notification.",
+    "You never let me feel alone in anything—ever.",
+    "You show up with snacks and leave me with peace.",
+    "Greece sunsets had nothing on your glow.",
+    "You turned group projects into friendship bracelets.",
+    "The way you listen is a gift I’ll never take for granted.",
+    "Thank you for loving me out loud and often.",
+    "You’re my emergency contact for laughter and snacks.",
+    "Studying with you = productivity, snacks, and a comedy special.",
+    "Your ‘I’m on my way’ texts fix everything instantly.",
+    "You make me feel like good news when you see me.",
+    "Even your complaints on the track were iconic motivation.",
+    "You pour love into people the way others pour coffee.",
+    "You packed snacks; I packed gratitude—perfect travel partners.",
+    "I can be fully myself with you, no edits needed.",
+    "You remember the little things, and that’s the big thing.",
+    "Campus felt like home because you were there.",
+    "You have a PhD in Thoughtfulness and Snackology.",
+    "You make plans feel exciting and unplanned moments feel special.",
+    "Every conversation with you refills my energy.",
+    "You taught me that care looks like showing up—again and again.",
+    "You’re the best part of my Stony Brook story.",
+    "I trust you with my worst days and my best news.",
+    "You make me laugh in the middle of sprints—talent.",
+    "Your kindness travels—Greece, campus, anywhere we go.",
+    "You always find the perfect words and the perfect chips.",
+    "You are proof that soulmates can be friends.",
+    "Thank you for feeding me when I forget to feed myself.",
+    "Our friendship is my favorite elective I never dropped.",
+    "You’re my designated snack fairy and hype queen.",
+    "We survived exams and cardio—name a stronger duo.",
+    "Your excitement to see me never gets old.",
+    "You bring snacks, I bring chaos—balance restored.",
+    "Greece was gorgeous, but your company made it unforgettable.",
+    "You turn ‘I’m tired’ into ‘we got this’ every time.",
+    "I love how we can talk about everything and nothing.",
+    "You redefine ‘best friend’ with daily proof.",
+    "You made the track feel like a runway for our jokes.",
+    "Your love language is thoughtful surprises and patient listening.",
+    "You are my comfort call and my celebration call.",
+    "Even your rants are wholesome entertainment—keep them coming.",
+    "You bring the snacks; you ARE the snack—ten out of ten.",
+    "Studying with you felt like teamwork and trust in action.",
+    "You’re my favorite person to get lost with in new cities.",
+    "I admire how you care, consistently and quietly.",
+    "Your laugh is my favorite campus soundtrack.",
+    "You make me braver just by being beside me.",
+    "You always notice when I need a hug or a bite.",
+    "We’ve got a lifetime of inside jokes pending.",
+    "No track, no test, no trip—just us and it’s perfect.",
+    "You make ordinary Tuesdays feel like little holidays.",
+    "Thank you for believing in me when I forgot how.",
+    "Your snacks say ‘I love you’ in every flavor.",
+    "You’re the reason ‘let’s study’ turned into ‘let’s thrive.’",
+    "We outran stress, even if we didn’t outrun the track.",
+    "You greet me like good weather—warm and bright.",
+    "I love how you make space for my thoughts.",
+    "Your friendship feels like a safe, sunny room.",
+    "You turn errands into adventures and lectures into laughs.",
+    "Your excitement to talk makes me feel so valued.",
+    "Greece gave us views; you gave me lifelong gratitude.",
+    "You’re the best at turning snacks into love letters.",
+    "Thank you for the thousand tiny kindnesses you think I don’t notice.",
+    "With you, every plan gets better—and every detour, too.",
+    "You’re my favorite hello and my most comforting ‘text me when you’re home.’",
+    "We’re forever teammates—on the track, in life, always.",
+    "I appreciate you more than words, snacks, and sunsets can say."
+    ];
+
+
+    // Build 1000 entries by cycling templates and adding a little variety tag.
+    const MESSAGES = Array.from({ length: 1000 }, (_, i) => {
+    const base = templates[i % templates.length];
+    const suffixes = [
+        "✨", "🌸", "🌈", "☁️", "🍓", "🫶", "🌼", "🪽", "⭐️", "🍯",
+        "🧁", "🧸", "🌙", "🥰", "🍑", "🫐", "🌷", "🫖", "🌟", "🎀"
+    ];
+    const tag = suffixes[i % suffixes.length];
+    return `${base} ${tag}`;
+    });
+
+
+    // --- 3) Helper for randomness ---
+    const pick = arr => arr[Math.floor(Math.random() * arr.length)];
+
+    // --- 4) Render on click with fade-in animation ---
+    const btn = document.getElementById("loveBtn");
+    const out = document.getElementById("output");
+
+    function showMessage(){
+      const msg = pick(MESSAGES);
+      const heart = pick(HEARTS);
+
+      // Clear previous content
+      out.innerHTML = "";
+
+      const container = document.createElement("div");
+      container.className = "msg";
+
+      const msgSpan = document.createElement("span");
+      msgSpan.className = "text";
+      msgSpan.textContent = msg;
+
+      const heartSpan = document.createElement("span");
+      heartSpan.className = "heart";
+      heartSpan.textContent = heart;
+      heartSpan.setAttribute("aria-hidden", "true");
+
+      container.appendChild(msgSpan);
+      container.appendChild(heartSpan);
+      out.appendChild(container);
+
+      // Re-trigger fade-in if clicking quickly
+      void container.offsetWidth; // force reflow
+      container.style.animation = "fadeIn .45s ease forwards";
+    }
+
+    btn.addEventListener("click", showMessage);
+
+    // Optional: show one on load for delight (comment out if you want it blank at start)
+    // showMessage();
+  </script>
+</body>
+</html>
